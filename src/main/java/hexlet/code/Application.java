@@ -10,39 +10,19 @@ public class Application {
                 statement.execute(sql);
             }
 
-            String sql2 = "INSERT INTO users (username, phone) VALUES (?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql2)) {
-                preparedStatement.setString(1, "Tommy");
-                preparedStatement.setString(2, "333333333");
-                preparedStatement.executeUpdate();
+            User userTom = new User("Tom", "333333333");
+            User userMaria = new User("Maria", "444444444");
 
-                preparedStatement.setString(1, "Maria");
-                preparedStatement.setString(2, "444444444");
-                preparedStatement.executeUpdate();
-            }
+            UserDAO userDAO = new UserDAO(connection);
 
-            String sql3 = "SELECT * FROM users";
-            try (Statement statement3 = connection.createStatement();) {
-                ResultSet resultSet = statement3.executeQuery(sql3);
-                while (resultSet.next()) {
-                    System.out.println(resultSet.getString("username"));
-                    System.out.println(resultSet.getString("phone"));
-                }
-            }
+            userDAO.save(userTom);
+            userDAO.save(userMaria);
 
-            String sql4 = "DELETE FROM users WHERE username = ?";
-            try (PreparedStatement preparedStatement2 = connection.prepareStatement(sql4)){
-                preparedStatement2.setString(1, "Tommy");
-                preparedStatement2.executeUpdate();
-            }
+            userTom.setPhone("555555555");
+            userDAO.save(userTom);
+            userDAO.find(userTom.getId());
 
-            try (Statement statement4 = connection.createStatement();) {
-                ResultSet resultSet = statement4.executeQuery(sql3);
-                while (resultSet.next()) {
-                    System.out.println(resultSet.getString("username"));
-                    System.out.println(resultSet.getString("phone"));
-                }
-            }
+            userDAO.delete(userMaria.getId());
         }
     }
 }
